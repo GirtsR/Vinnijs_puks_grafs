@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 
+// Ar NO_VERTEX apzīmēju neeksistējošu škautni grafā
 #define NO_VERTEX 101
 
 void printGraph(const std::vector<std::vector<int>> &graph) {
@@ -23,59 +24,78 @@ struct Edge {
         this->b = b;
         this->w = w;
     }
-    void printEdge() {
-        std::cout << a << " " << b << " "
-                  << " " << w << std::endl;
+    void printEdge() const {
+        std::cout << a << "<->" << b << ": " << w << std::endl;
     }
 };
 
 void primAlg(const std::vector<std::vector<int>> &graph, std::vector<Edge> &prims_edges) {
-    bool selected[graph.size()];
+    //  min_neighbor apzīmēs virsotnes kaimiņu, uz kuru pievienotās škautnes svars ir vismazākais
+    int min_neighbor[graph.size()];
+    // min_edge masīvs izmantojams mazākā svara šķautnes glabāšanai
+    int min_edge[graph.size()];
+    // true, ja i-tā virsotne jau ievietota minimum spanning tree
+    bool visited[graph.size()];
 
-    int no_edge = 0;
+    // Inicializēju sākotnējās vērtības (visas virsotnes neapskatītas un min_edge nav noteikts)
+    for (int i = 0; i < graph.size(); i++) {
+        visited[i] = false;
+        min_edge[i] = INT_MAX;
+    }
 
-    // Sāk ar pirmo virsotni
-    selected[0] = true;
+    // Kā pirmo apskatīšu 1. virsotni
+    min_edge[0] = 0;
+    // 1. virsotnei mazākais kaimiņš netiek meklēts
+    min_neighbor[0] = -1;
 
-    int x, y;
-    while (no_edge < graph.size() - 1) {
+    for (int count = 1; count <= graph.size(); count++) {
+        // Izvēlamies u tādu, ka w(v, u) = min, kur u vēl nav iekļauts MST
         int min = INT_MAX;
-        for (int i = 0; i < graph.size(); i++) {
-            if (selected[i]) {
-                for (int j = 0; j < graph.size(); j++) {
-                    if (!selected[j] && graph[i][j] != NO_VERTEX) {
-                        if (graph[i][j] < min) {
-                            min = graph[i][j];
-                            x = i;
-                            y = j;
-                        }
-                    }
-                }
+        int u;
+        for (int v = 0; v < graph.size(); v++) {
+            if (!visited[v] && min_edge[v] < min) {
+                min = min_edge[v];
+                u = v;
             }
         }
-        Edge min_edge(x + 1, y + 1, graph[x][y]);
-        prims_edges.push_back(min_edge);
-        selected[y] = true;
-        no_edge++;
+
+        visited[u] = true;
+        // Atjauninam min_edge vērtību tām virsotnēm, kas ir virsotnes u kaimiņš un vēl nav apskatīts
+        for (int v = 0; v < graph.size(); v++) {
+            if (graph[u][v] != NO_VERTEX && !visited[v] && graph[u][v] < min_edge[v]) {
+                min_neighbor[v] = u;
+                min_edge[v] = graph[u][v];
+            }
+        }
+    }
+
+    // MST šķautnes būs katras virsotnes šķautne ar tās min_neighbor
+    for (int i = 1; i < graph.size(); i++) {
+        if (min_edge[i] != INT_MAX) {
+            Edge edge(min_neighbor[i] + 1, i + 1, graph[min_neighbor[i]][i]);
+            prims_edges.emplace_back(edge);
+        }
     }
 }
 
-int main() {
-    // TODO - read as arg
-    std::ifstream infile("/Users/girtsrudziss/studijas/Atru_Algoritmu_Konstruesana_un_Analize/Progr_darbs/sample_data/sample1.txt");
+int main(int argc, char **argv) {
+    if (argc < 2) {
+       std::cerr << "Programmai nav norādīts ceļš uz ieejas datiem!" << std::endl;
+       exit(-1);
+    }
+    std::ifstream infile(argv[1]);
     unsigned int n;
     infile >> n;
+
     // Grafs ir neorientēts, sķautnes matricā iet abos virzienos
-    // Neeksistējošu šķautni nevar apzīmēt ar 0, tāpēc izmantoju NO_VERTEX (101 vērtību)
     std::vector<std::vector<int>> graph(n, std::vector<int>(n, NO_VERTEX));
-    printGraph(graph);
     while (infile) {
         int a, b, w;
         infile >> a >> b >> w;
-        std::cout << a << " " << b << " " << w << std::endl;
         graph[a - 1][b - 1] = w;
         graph[b - 1][a - 1] = w;
     }
+    std::cout << "Sākotnējais grafs:" << std::endl;
     printGraph(graph);
 
     // Sākumā no grafa jāatmet visas negatīvās šķautnes, jāpieskaita gala rezultātam
@@ -91,6 +111,7 @@ int main() {
             }
         }
     }
+    std::cout << "Negatīvās šķautnes:" << std::endl;
     for (Edge &edge : result_edges) {
         edge.printEdge();
     }
@@ -108,18 +129,21 @@ int main() {
             }
         }
     }
+    std::cout << "Grafs ar invertētiem šķautņu svariem:" << std::endl;
     printGraph(graph);
     std::vector<Edge> prims_edges;
     primAlg(graph, prims_edges);
 
+    std::cout << "Prima algoritma atrastās šķautnes:" << std::endl;
     // Izdzēšam no grafa prims_edges
     for (Edge &prims_edge : prims_edges) {
         prims_edge.printEdge();
         graph[prims_edge.a - 1][prims_edge.b - 1] = NO_VERTEX;
         graph[prims_edge.b - 1][prims_edge.a - 1] = NO_VERTEX;
     }
+    std::cout << "Grafs bez maximum spanning tree šķautnēm:" << std::endl;
     printGraph(graph);
-    // Atlikušās virsotnes būs vajadzīgās
+    // Atlikušās šķautnes būs vajadzīgās
     for (int i = 0; i < graph.size(); i++) {
         for (int j = i; j < graph[i].size(); j++) {
             if (graph[i][j] != NO_VERTEX) {
@@ -129,11 +153,18 @@ int main() {
         }
     }
     int sum = 0;
+    std::cout << "Vinnijam vajadzīgās šķautnes:" << std::endl;
     for (Edge &edge : result_edges) {
         sum += edge.w;
         edge.printEdge();
     }
     std::cout << "Summa: " << sum << std::endl;
 
+    std::ofstream outfile("output.txt");
+    outfile << result_edges.size() << std::endl;
+    outfile << sum << std::endl;
+    for (Edge &edge : result_edges) {
+        outfile << edge.a << " " << edge.b << std::endl;
+    }
     return 0;
 }
