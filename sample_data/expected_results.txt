@@ -1,0 +1,3 @@
+The Sample 1 describes graph with 10 vertices and the "sum of difficulty levels" should be 615.
+The Sample 2 describes graph with 50 vertices and the "sum of difficulty levels" should be 2394.
+The Sample 3 describes graph with 200 vertices and the "sum of difficulty levels" should be 2422.
