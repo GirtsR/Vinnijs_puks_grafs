@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    std::cout << "Negativas sķautnes:" << std::endl;
+    std::cout << "Negativas skautnes:" << std::endl;
     for (Edge &edge : result_edges) {
         edge.printEdge();
     }
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
      * atrisinot minimum spanning tree uz jaunā grafa.
      * Visas šķautnes, kas nepiederēs maximum spanning tree, veidos vajadzīgās šķautnes uzdevuma izpildei
      */
-    std::cout << "Grafs ar invertetiem sķautņu svariem:" << std::endl;
+    std::cout << "Grafs ar invertetiem skautņu svariem:" << std::endl;
     printGraph(graph);
     std::vector<Edge> prims_edges;
     primAlg(graph, prims_edges);
@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
         }
     }
     int sum = 0;
-    std::cout << "Vinnijam vajadzigas sķautnes:" << std::endl;
+    std::cout << "Vinnijam vajadzigas skautnes:" << std::endl;
     for (Edge &edge : result_edges) {
         sum += edge.w;
         edge.printEdge();
@@ -164,5 +164,6 @@ int main(int argc, char **argv) {
     for (Edge &edge : result_edges) {
         outfile << edge.a << " " << edge.b << std::endl;
     }
+    std::cout << "Rezultati pieejami faila output.txt!" << std::endl;
     return 0;
 }
