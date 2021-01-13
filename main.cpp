@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <vector>
 
@@ -80,14 +81,14 @@ void primAlg(const std::vector<std::vector<int>> &graph, std::vector<Edge> &prim
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-       std::cerr << "Programmai nav norādīts ceļš uz ieejas datiem!" << std::endl;
+       std::cerr << "Programmai nav noradits cels uz ieejas datiem!" << std::endl;
        exit(-1);
     }
     std::ifstream infile(argv[1]);
     unsigned int n;
     infile >> n;
 
-    // Grafs ir neorientēts, sķautnes matricā iet abos virzienos
+    // Grafs ir neorientēts, šķautnes matricā iet abos virzienos
     std::vector<std::vector<int>> graph(n, std::vector<int>(n, NO_VERTEX));
     while (infile) {
         int a, b, w;
@@ -95,7 +96,7 @@ int main(int argc, char **argv) {
         graph[a - 1][b - 1] = w;
         graph[b - 1][a - 1] = w;
     }
-    std::cout << "Sākotnējais grafs:" << std::endl;
+    std::cout << "Sakotnejais grafs:" << std::endl;
     printGraph(graph);
 
     // Sākumā no grafa jāatmet visas negatīvās šķautnes, jāpieskaita gala rezultātam
@@ -111,7 +112,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    std::cout << "Negatīvās šķautnes:" << std::endl;
+    std::cout << "Negativas sķautnes:" << std::endl;
     for (Edge &edge : result_edges) {
         edge.printEdge();
     }
@@ -129,19 +130,19 @@ int main(int argc, char **argv) {
             }
         }
     }
-    std::cout << "Grafs ar invertētiem šķautņu svariem:" << std::endl;
+    std::cout << "Grafs ar invertetiem sķautņu svariem:" << std::endl;
     printGraph(graph);
     std::vector<Edge> prims_edges;
     primAlg(graph, prims_edges);
 
-    std::cout << "Prima algoritma atrastās šķautnes:" << std::endl;
+    std::cout << "Prima algoritma atrastas skautnes:" << std::endl;
     // Izdzēšam no grafa prims_edges
     for (Edge &prims_edge : prims_edges) {
         prims_edge.printEdge();
         graph[prims_edge.a - 1][prims_edge.b - 1] = NO_VERTEX;
         graph[prims_edge.b - 1][prims_edge.a - 1] = NO_VERTEX;
     }
-    std::cout << "Grafs bez maximum spanning tree šķautnēm:" << std::endl;
+    std::cout << "Grafs bez maximum spanning tree skautnem:" << std::endl;
     printGraph(graph);
     // Atlikušās šķautnes būs vajadzīgās
     for (int i = 0; i < graph.size(); i++) {
@@ -153,7 +154,7 @@ int main(int argc, char **argv) {
         }
     }
     int sum = 0;
-    std::cout << "Vinnijam vajadzīgās šķautnes:" << std::endl;
+    std::cout << "Vinnijam vajadzigas sķautnes:" << std::endl;
     for (Edge &edge : result_edges) {
         sum += edge.w;
         edge.printEdge();
