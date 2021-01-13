@@ -100,15 +100,19 @@ int main(int argc, char **argv) {
     printGraph(graph);
 
     // Sākumā no grafa jāatmet visas negatīvās šķautnes, jāpieskaita gala rezultātam
-    // Pēc tam aprēķinam minimum-weight-feedback-edge-set (vai arī maximum weight spanning tree)
     std::vector<Edge> result_edges;
     for (int i = 0; i < graph.size(); i++) {
         for (int j = i; j < graph[i].size(); j++) {
             if (graph[i][j] < 0) {
+                // Šķautne ir negatīva -> pievienojam pie result_edges
                 Edge negative_edge(i + 1, j + 1, graph[i][j]);
                 result_edges.emplace_back(negative_edge);
                 graph[i][j] = NO_VERTEX;
                 graph[j][i] = NO_VERTEX;
+            } else if (graph[i][j] != NO_VERTEX) {
+                // Šķautne ir nenegatīva -> pārveidojam tās svarus par negatīviem
+                graph[i][j] *= -1;
+                graph[j][i] *= -1;
             }
         }
     }
@@ -116,20 +120,13 @@ int main(int argc, char **argv) {
     for (Edge &edge : result_edges) {
         edge.printEdge();
     }
+
     /**
      * Maximum spanning tree atrodam, izmantojot Prima algoritmu,
      * sākumā visu šķautņu vērtības pārveidojot par negatīvām un
      * atrisinot minimum spanning tree uz jaunā grafa.
      * Visas šķautnes, kas nepiederēs maximum spanning tree, veidos vajadzīgās šķautnes uzdevuma izpildei
      */
-    for (int i = 0; i < graph.size(); i++) {
-        for (int j = 0; j < graph[i].size(); j++) {
-            if (graph[i][j] != NO_VERTEX) {
-                Edge edge(i + 1, j + 1, graph[i][j]);
-                graph[i][j] *= -1;
-            }
-        }
-    }
     std::cout << "Grafs ar invertetiem sķautņu svariem:" << std::endl;
     printGraph(graph);
     std::vector<Edge> prims_edges;
