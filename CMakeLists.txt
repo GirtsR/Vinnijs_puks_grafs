@@ -8,4 +8,4 @@ if (CMAKE_HOST_WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
 endif ()
 
-add_executable(Progr_darbs main.cpp)
+add_executable(Vinnijs_puks_dobumi vinnijs_puks_gr16014.cpp)
