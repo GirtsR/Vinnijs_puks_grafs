@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
      * atrisinot minimum spanning tree uz jaunā grafa.
      * Visas šķautnes, kas nepiederēs maximum spanning tree, veidos vajadzīgās šķautnes uzdevuma izpildei
      */
-    std::cout << "Grafs ar invertetiem skautņu svariem:" << std::endl;
+    std::cout << "Grafs ar invertetiem skautnu svariem:" << std::endl;
     printGraph(graph);
     std::vector<Edge> prims_edges;
     primAlg(graph, prims_edges);
